@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spam Checker</title>
+</head>
+<body>
+  <h1>Spam Checker</h1>
+  <form id="spam-form">
+    <textarea id="input-text" rows="10" cols="50" placeholder="Enter your text here..."></textarea>
+    <br>
+    <button type="submit">Check Spam</button>
+  </form>
+  <p id="result"></p>
+
+  <script>
+    document.getElementById('spam-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const inputText = document.getElementById('input-text').value;
+
+      try {
+        const response = await fetch('/check-spam', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: inputText
+        });
+
+        const result = await response.text();
+        document.getElementById('result').textContent = result;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('result').textContent = 'An error occurred. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>

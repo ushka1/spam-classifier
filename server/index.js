@@ -1,5 +1,6 @@
 const express = require('express');
 const { PythonShell } = require('python-shell');
+const path = require('path');
 
 async function checkSpamHandler(req, res) {
   const input = req.body;
@@ -23,8 +24,10 @@ const app = express();
 app.use(express.text());
 
 app.post('/check-spam', checkSpamHandler);
+app.use(express.static(path.join(__dirname, 'public'))); // Dodanie obsługi plików statycznych
+
 app.use('/', (req, res) => {
-  return res.send('Hello World!');
+  return res.sendFile(path.join(__dirname, 'public', 'index.html')); // Zmiana, aby zwrócić plik HTML
 });
 
 app.listen(3000, () => {
