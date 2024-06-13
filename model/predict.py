@@ -1,4 +1,3 @@
-import json
 import os
 import pickle
 import string
@@ -46,10 +45,15 @@ def text_transform(text: str) -> str:
 
 # ----------------------------------------
 
+
+def make_prediction(input_data: str) -> str:
+    transformed_data = text_transform(input_data)
+    vectorized_data = vectorizer.transform([transformed_data])
+    result = model.predict(vectorized_data)
+
+    return result[0]
+
+
 input_data = sys.argv[1]
-
-transformed_data = text_transform(input_data)
-vectorized_data = vectorizer.transform([transformed_data])
-result = model.predict(vectorized_data)
-
-print(result[0])
+result = make_prediction(input_data)
+print(result)

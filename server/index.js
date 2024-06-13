@@ -5,31 +5,37 @@ const path = require('path');
 async function checkSpamHandler(req, res) {
   const input = req.body;
   console.log('Input:', input);
-  const result = await PythonShell.run('predict.py', {
-    mode: 'text',
-    scriptPath: '../dist',
-    args: [input],
-  });
 
-  if (result[0] === '1') {
-    console.log('Result: SPAM');
-    return res.send('Spam detected!');
-  } else {
-    console.log('Result: HAM');
-    return res.send('Not spam!');
+  try {
+    const result = await PythonShell.run('predict.py', {
+      mode: 'text',
+      scriptPath: '../model',
+      args: [input],
+    });
+
+    if (result[0] === '1') {
+      console.log('Result: SPAM');
+      return res.status(200).send('1');
+    } else {
+      console.log('Result: HAM');
+      return res.status(200).send('0');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).send('-1');
   }
 }
 
 const app = express();
 app.use(express.text());
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/check-spam', checkSpamHandler);
-app.use(express.static(path.join(__dirname, 'public'))); // Dodanie obsługi plików statycznych
-
-app.use('/', (req, res) => {
-  return res.sendFile(path.join(__dirname, 'public', 'index.html')); // Zmiana, aby zwrócić plik HTML
+app.get('*', (_, res) => {
+  res.redirect('/');
 });
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
+  console.log('Frontend available at http://localhost:3000');
 });
